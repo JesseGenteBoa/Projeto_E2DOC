@@ -3,7 +3,7 @@ from tkinter import Tk, Canvas, Label, Button, PhotoImage
 
     
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\User\OneDrive - EQS Engenharia Ltda\Área de Trabalho\Projeto E2DOC\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"\assets")
 
 
 def relative_to_assets(path: str) -> Path:
@@ -100,7 +100,7 @@ canvas.create_text(
 )
 
 button_image_2 = PhotoImage(
-    file=relative_to_assets("button_2.png"))
+    file=relative_to_assets("button_1.png"))
 button_2 = Button(
     image=button_image_2,
     borderwidth=0,
@@ -117,7 +117,7 @@ button_2.place(
 )
 
 button_image_3 = PhotoImage(
-    file=relative_to_assets("button_3.png"))
+    file=relative_to_assets("button_1.png"))
 button_3 = Button(
     image=button_image_3,
     borderwidth=0,
@@ -134,7 +134,7 @@ button_3.place(
 )
 
 button_image_4 = PhotoImage(
-    file=relative_to_assets("button_4.png"))
+    file=relative_to_assets("button_1.png"))
 button_4 = Button(
     image=button_image_4,
     borderwidth=0,
@@ -151,7 +151,7 @@ button_4.place(
 )
 
 button_image_5 = PhotoImage(
-    file=relative_to_assets("button_5.png"))
+    file=relative_to_assets("button_1.png"))
 button_5 = Button(
     image=button_image_5,
     borderwidth=0,
@@ -186,7 +186,7 @@ canvas.create_text(
 )
 
 button_image_6 = PhotoImage(
-    file=relative_to_assets("button_6.png"))
+    file=relative_to_assets("button_1.png"))
 button_6 = Button(
     image=button_image_6,
     borderwidth=0,
@@ -203,7 +203,7 @@ button_6.place(
 )
 
 button_image_7 = PhotoImage(
-    file=relative_to_assets("button_7.png"))
+    file=relative_to_assets("button_1.png"))
 button_7 = Button(
     image=button_image_7,
     borderwidth=0,
