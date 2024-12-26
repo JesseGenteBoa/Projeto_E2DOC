@@ -1,10 +1,15 @@
+import queue
 import threading
+import tkinter as tk
 from time import sleep
 from pathlib import Path
+from utils import zerar_lista_controle
 from tkinter.filedialog import askopenfilenames
-from tkinter import Tk, Canvas, Label, Button, PhotoImage, StringVar
+
 
 arquivos = []
+lista_controle = queue.Queue()
+
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\User\OneDrive - EQS Engenharia Ltda\Área de Trabalho\Projeto E2DOC\build\build\assets\frame0")
@@ -14,32 +19,82 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 
+def modificar_lista():
+    global arquivos, lista_controle
+    lista = [" \\ ".join(item.split('/')[-3:]).split('.')[0] for item in arquivos]
+
+    def excluir_itens():
+        selecionados = listbox.curselection()
+        for i in reversed(selecionados):
+            listbox.delete(i)
+            del arquivos[i]
+        try:
+            label_arquivo.set("   ".join(arquivos[0].split('/')[-3:]).split('.')[0])
+            zerar_lista_controle(lista_controle)
+            lista_controle.put(1)
+        except IndexError:
+            zerar_lista_controle(lista_controle)
+            label_arquivo.set("")
+
+
+    root = tk.Tk()
+    root.geometry("330x310+80+80")
+    root.iconbitmap(relative_to_assets("robozinho.ico"))
+    root.configure(bg = "#CACACA")
+    root.title("Lista de Arquivos")
+
+    listbox = tk.Listbox(root, selectmode=tk.MULTIPLE, font=("Bahnschrift SemiLight SemiConde", 16 * -1), justify=tk.CENTER)
+    listbox.pack(ipadx=80, ipady=10, padx=10, pady=10)
+
+    for item in lista:
+        listbox.insert(tk.END, item)
+
+    btn_excluir = tk.Button(root, text="Excluir Selecionados", cursor="hand2", justify="center", font=("Bahnschrift SemiLight SemiConde", 17 * -1), command=excluir_itens)
+    btn_excluir.pack(fill=tk.Y, pady=10, ipadx=10, ipady=2)
+
+    root.mainloop()
+
+
+
 def selecionar_arquivo():
-    global caminho_arq_comprovante, arquivos, label_arquivo
+    global caminho_arq_comprovante, arquivos, label_arquivo, lista_controle
     caminho_arq_comprovante = askopenfilenames(title="Selecione o arquivo de comprovantes.", filetypes=[("PDF Files", "*.pdf")])
     verificacao = [arq for arq in caminho_arq_comprovante if arq not in arquivos]
     arquivos = arquivos + verificacao
     label_arquivo.set("   ".join(arquivos[-1].split('/')[-3:]).split('.')[0])
-    threading.Thread(target=atualizar_label, args=(arquivos,)).start()
+    lista_controle.put(1)
+    if lista_controle.qsize() == 1:
+        threading.Thread(target=atualizar_label).start()
 
 
-def atualizar_label(arquivos):
-    sleep(7)
-    for arq in arquivos:
-        label_arquivo.set("   ".join(arq.split('/')[-3:]).split('.')[0])
-        sleep(7)
+
+def atualizar_label():
+    global arquivos
+    sleep(5)
+    if len(arquivos) > 0:
+        for arq in arquivos:
+            if lista_controle.qsize() == 1:
+                label_arquivo.set("   ".join(arq.split('/')[-3:]).split('.')[0])
+            else:
+                zerar_lista_controle(lista_controle)
+                lista_controle.put(1)
+            sleep(5)
+        return atualizar_label()
+    else:
+        label_arquivo.set("")
 
 
-window = Tk()
 
-window.geometry("587x381+150+30")
+window = tk.Tk()
+
+window.geometry("587x381+412+80")
 window.configure(bg = "#CACACA")
 window.iconbitmap(relative_to_assets("robozinho.ico"))
 window.title("Automação E2DOC")
 
-label_arquivo = StringVar()
+label_arquivo = tk.StringVar()
 
-canvas = Canvas(
+canvas = tk.Canvas(
     window,
     bg = "#CACACA",
     height = 381,
@@ -50,7 +105,7 @@ canvas = Canvas(
 )
 
 canvas.place(x = -0.5, y = 0)
-image_image_1 = PhotoImage(
+image_image_1 = tk.PhotoImage(
     file=relative_to_assets("image_1.png"))
 image_1 = canvas.create_image(
     294.0,
@@ -58,7 +113,7 @@ image_1 = canvas.create_image(
     image=image_image_1
 )
 
-entry_1 = Label(
+entry_1 = tk.Label(
     textvariable=label_arquivo,
     bd=0,
     bg="#DEDEDE",
@@ -74,13 +129,13 @@ entry_1.place(
     height=48.0
 )
 
-button_image_1 = PhotoImage(
+button_image_1 = tk.PhotoImage(
     file=relative_to_assets("button_1.png"))
-button_1 = Button(
+button_1 = tk.Button(
     image=button_image_1,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_1 clicked"),
+    command=lambda: modificar_lista(),
     relief="flat",
     cursor="hand2"
 )
@@ -91,9 +146,9 @@ button_1.place(
     height=49.0
 )
 
-button_image_2 = PhotoImage(
+button_image_2 = tk.PhotoImage(
     file=relative_to_assets("button_2.png"))
-button_2 = Button(
+button_2 = tk.Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
@@ -108,9 +163,9 @@ button_2.place(
     height=66.0
 )
 
-button_image_3 = PhotoImage(
+button_image_3 = tk.PhotoImage(
     file=relative_to_assets("button_3.png"))
-button_3 = Button(
+button_3 = tk.Button(
     image=button_image_3,
     borderwidth=0,
     highlightthickness=0,
@@ -124,5 +179,6 @@ button_3.place(
     width=468.0,
     height=52.0
 )
+
 window.resizable(False, False)
 window.mainloop()
