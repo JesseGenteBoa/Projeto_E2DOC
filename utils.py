@@ -1,4 +1,3 @@
-from tkinter import messagebox
 import hashlib
 import os
 import base64
@@ -98,20 +97,9 @@ def ler_arquivo(caminho):
 
 
 
-def adicionar_pasta(pasta_comprovante, tipo, label, lista_de_pastas):
-    pasta_selecionada = pasta_comprovante.split('/')[-1]
-    if pasta_comprovante != "":
-        if not tipo in pasta_comprovante:
-            messagebox.showwarning("Pasta incorreta!", f"Essa pasta não é do tipo {tipo}.")
-            return
-        if pasta_comprovante not in lista_de_pastas:
-            lista_de_pastas.append(pasta_comprovante)
-        else:
-            messagebox.showwarning("Pasta já adicionada!", f"Essa pasta já foi adicionada à lista de envios.")
-    else:
-        for i in range(len(lista_de_pastas)-1, -1, -1):
-            if tipo in lista_de_pastas[i]:
-                lista_de_pastas.pop(i)
-    label.set(pasta_selecionada)
+def zerar_lista_controle(lista_controle):
+    while not lista_controle.empty():
+        lista_controle.get()
+        lista_controle.task_done()
 
-
+ 
