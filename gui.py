@@ -19,6 +19,7 @@ def relative_to_assets(path: str) -> Path:
     return ASSETS_PATH / Path(path)
 
 
+
 def modificar_lista():
     global arquivos, lista_controle
     lista = [" \\ ".join(item.split('/')[-3:]).split('.')[0] for item in arquivos]
@@ -35,7 +36,6 @@ def modificar_lista():
         except IndexError:
             zerar_lista_controle(lista_controle)
             label_arquivo.set("")
-
 
     root = tk.Tk()
     root.geometry("330x310+80+80")
