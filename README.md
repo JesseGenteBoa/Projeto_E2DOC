@@ -5,7 +5,7 @@ e fará conexão com uma plataforma de gestão de documentos voltada para o seto
 
 O objetivo dessa automação é alimentar a plataforma E2DOC com os comprovantes de pagamento feitos isoladamente no portal de um banco determinado. 
 Em detalhes, o que ocorre é que a maioria dos pagamentos feitos pelo setor financeiro são realizados de forma automática pelo sistema ERP da empresa, 
-mas, existem os casos onde, devido uma falha processual, o título de pagamento não pode ser efetivado pelas vias tradicionais, implicando que seu pagamento seja feito de forma manual, direto no portal do banco.
+mas, existem os casos onde, devido uma falha processual, o título de pagamento não pode ser efetivado pelas vias comuns, implicando que seu pagamento seja feito de forma manual, direto no portal do banco.
 Esses comprovantes "manuais" precisam estar disponíveis para consulta do setor jurídico na plataforma E2DOC, que, ao contrario dos comprovantes pagos pelo sistema ERP, - que alimentam a plataforma automaticamente devido a integração que há entre o ERP e o E2DOC - esses comprovantes ditos "manuais" não são integrados automaticamente à plataforma, fazendo com que seja necessário a ação de um operador para separar esse documento do arquivo lote de comprovantes extraídos da plataforma do banco, e fazer a sua integração manual, preenchendo um formulário com os dados do documento no E2DOC, para que então se faça sua indexação.
 
 Na interface de interação, o usuario irá clicar em um botão que o permitirá selecionar o, ou, os arquivos lote desejados. 
