@@ -4,8 +4,8 @@ import requests
 class E2DocClient:
 
     def __init__(self):
-        self.usuario = "*********"
-        self.senha = "*********"
+        self.usuario = "**************"
+        self.senha = "********"
         self.keybase = "EQS"
         self.file_name = None
         self.protocolo = None
@@ -26,14 +26,14 @@ class E2DocClient:
         if response.status_code == 200:
             self.token = response.json().get("AccessToken")
         else:
-            raise Exception("Erro ao autenticar:", response.status_code, response.text)
+            return "Conexão não estabelecida entre os sistemas"
 
 
 
-    def iniciar_sincronismo(self, protocolo, competencia, cpf, nome, banco, regiao, centro_de_custo):
+    def iniciar_sincronismo(self, protocolo, competencia, cpf, nome, banco, regiao, centro_de_custo, modelo_de_pasta="FINANCEIRO - DP", label='Comum', pedido=""):
         """
         Sincroniza a automação com o sistema E2DOC.
-        Além de preencher previamente o formulário da pasta modelo FINANCEIRO - DP.
+        Além de preencher préviamente o formulário da pasta modelo.
 
         Retorna:
             "Sincronismo iniciado" se a comunicação for bem-sucedida.
@@ -41,24 +41,37 @@ class E2DocClient:
             Exception: Se ocorrer um erro durante a sincronização.
         """
 
-        self.protocolo = protocolo
-        url = 'https://www.e2doc.com.br/e2doc_api/Sincronismo/Iniciar'
-        parametros = {
-            "token": self.token,
-            "usuario": self.usuario,
-            "protocolo": self.protocolo,
-            "modeloPasta": "FINANCEIRO - DP",
-            "indices": [
+        if label != 'Comum':
+            indices = [
                 {"label": "COMPETÊNCIA", "valor": competencia},
                 {"label": "CPF", "valor": cpf},
                 {"label": "NOME DO FUNCIONARIO", "valor": nome},
-                {"label": "PEDIDO", "valor": ""},
+                {"label": "PEDIDO", "valor": pedido},
+                {"label": "BANCO", "valor": banco},
+                {"label": "SINDICATO", "valor": ""},
+                {"label": "CENTRO DE CUSTO", "valor": centro_de_custo}
+            ]
+        else:
+            indices = [
+                {"label": "COMPETÊNCIA", "valor": competencia},
+                {"label": "CPF", "valor": cpf},
+                {"label": "NOME DO FUNCIONARIO", "valor": nome},
+                {"label": "PEDIDO", "valor": pedido},
                 {"label": "BANCO", "valor": banco},
                 {"label": "SINDICATO", "valor": ""},
                 {"label": "ESTADO", "valor": ""},
                 {"label": "REGIÃO", "valor": regiao},
                 {"label": "CENTRO DE CUSTO", "valor": centro_de_custo}
             ]
+
+        self.protocolo = protocolo
+        url = 'https://www.e2doc.com.br/e2doc_api/Sincronismo/Iniciar'
+        parametros = {
+            "token": self.token,
+            "usuario": self.usuario,
+            "protocolo": self.protocolo,
+            "modeloPasta": modelo_de_pasta,
+            "indices": indices
         }
         response = requests.post(url, json=parametros)
         if response.status_code == 200:
@@ -97,7 +110,7 @@ class E2DocClient:
 
 
 
-    def efetivar_envio(self, modelo_de_documento, data, hash_md5, tamanho):
+    def efetivar_envio(self, modelo_de_documento, data, hash_md5, tamanho, modelo_de_pasta="FINANCEIRO - DP"):
         """
         Efetiva o envio do arquivo para a plataforma E2DOC,
         além de preencher alguns outros campos do formulário da pasta modelo FINANCEIRO - DP.
@@ -129,7 +142,7 @@ class E2DocClient:
                 "sequencia": 1,
                 "versiona": 0
             },
-            "ModeloPasta": "FINANCEIRO - DP",
+            "ModeloPasta": modelo_de_pasta,
             "protocolo": self.protocolo
         }
         response = requests.post(url, json=parametros)
