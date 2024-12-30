@@ -1,6 +1,8 @@
-import hashlib
 import os
 import base64
+import hashlib
+import smtplib
+from email.message import EmailMessage
 
 
 
@@ -34,7 +36,7 @@ def retornar_banco(caminho):
         case _ if "CEF" in caminho:
             banco = "CEF"
         case _ if "BB" in caminho:
-            banco = "BB"
+            banco = "BB (BANCO DO BRASIL)"
     return banco
 
 
@@ -85,6 +87,74 @@ def criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de
 
 
 
+def enviar_email(relatorio, data_festiva):
+    match data_festiva:
+        case "01/04":
+            feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!\n"Não sei, só sei que foi assim" - Chicó'''
+        case _ if "15/04" <= data_festiva <= "20/04":
+            feriado = "E que venham os chocolates!"
+        case "01/05":
+            feriado = "Feliz dia do trabalhador para você que trabalha e sente muita dor."
+        case "11/05":
+            feriado = "Feliz dia das mães!"
+        case "12/06":
+            feriado = "Para todos os sortudos que encontraram o amor, Feliz dia dos namorados!"
+        case "10/08":
+            feriado = "Feliz dia dos pais!"
+        case "07/09":
+            feriado = "Viva a nossa independência!"
+        case "12/10":
+            feriado = "Feliz dia das nossas crianças!"
+        case "02/11":
+            feriado = "Saudemos os nossos mortos. Eles estão diante do maior mistério da nossa existência, o estar ou o não estar."
+        case _ if "20/12" <= data_festiva <= "31/12":
+            feriado = "Boas festas!"
+        case _:
+            feriado = ""
+
+    list_tratada = ["".join(lista) for lista in relatorio]
+    string = "\n".join(list_tratada)
+
+    corpo = f'''
+Olá, colaborador!
+
+Segue um relatório do que foi enviado pela automação para o E2DOC;
+
+
+Envios totais: {len(relatorio)}
+
+Processos enviados:
+
+NOME  -  MODELO DE DOCUMENTO  -  COMPETENCIA
+
+{string}
+
+
+
+{feriado}
+
+Grato pela colaboração.
+
+Atensiosamente,
+Doc Hudson,
+
+    '''
+
+    carta = EmailMessage()
+    carta.set_content(corpo)
+    carta['Subject'] = "Enviados para o E2DOC"
+    carta['From'] = "eqsengenharia@eqsengenharia.com.br"
+    carta['To'] = "Financeiro@eqsengenharia.com.br"
+
+    try:
+        with smtplib.SMTP_SSL('grid331.mailgrid.com.br', 465) as servidor:
+            servidor.login("eqsengenharia@eqsengenharia.com.br", "YXPLlbnL2N")
+            servidor.send_message(carta)
+    except Exception as e:
+        pass
+
+
+
 def ler_arquivo(caminho):
     tamanho = os.path.getsize(caminho)
 
@@ -101,5 +171,3 @@ def zerar_lista_controle(lista_controle):
     while not lista_controle.empty():
         lista_controle.get()
         lista_controle.task_done()
-
- 
