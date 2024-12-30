@@ -1,7 +1,10 @@
+import os
 import queue
 import threading
+import docHudson
 import tkinter as tk
 from time import sleep
+from tkinter import ttk
 from pathlib import Path
 from utils import zerar_lista_controle
 from tkinter.filedialog import askopenfilenames
@@ -9,10 +12,12 @@ from tkinter.filedialog import askopenfilenames
 
 arquivos = []
 lista_controle = queue.Queue()
+janela_aberta = False
 
 
 OUTPUT_PATH = Path(__file__).parent
 ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\User\OneDrive - EQS Engenharia Ltda\Área de Trabalho\Projeto E2DOC\build\build\assets\frame0")
+
 
 
 def relative_to_assets(path: str) -> Path:
@@ -20,8 +25,36 @@ def relative_to_assets(path: str) -> Path:
 
 
 
+def acionar_automacao():
+    global arquivos
+    janela_espera = tk.Toplevel(window)
+    janela_espera.iconbitmap(relative_to_assets("robozinho.ico"))
+    janela_espera.title("Aguarde")
+    janela_espera.geometry("300x130+552+260")
+
+    label_espera = tk.Label(janela_espera, text="Executando, por favor aguarde...", font=("Bahnschrift SemiLight SemiConde", 18 * -1))
+    label_espera.pack(pady=20)
+
+    progresso = ttk.Progressbar(janela_espera, mode="indeterminate")
+    progresso.pack(pady=10, padx=1)
+    progresso.start()
+
+    def rodar_automacao():
+        relatorio, tipo_pag_incorreto, cpfs_errados, comp_nao_env = docHudson.executar_automacao(arquivos)
+        janela_espera.destroy()
+
+    threading.Thread(target=rodar_automacao, daemon=True).start()
+
+
+
 def modificar_lista():
-    global arquivos, lista_controle
+    global arquivos, lista_controle, janela_aberta
+
+    if janela_aberta:
+        return
+
+    janela_aberta = True
+
     lista = [" \\ ".join(item.split('/')[-3:]).split('.')[0] for item in arquivos]
 
     def excluir_itens():
@@ -37,11 +70,24 @@ def modificar_lista():
             zerar_lista_controle(lista_controle)
             label_arquivo.set("")
 
+    def abrir_pdf():
+        selecionados = listbox.curselection()
+        if selecionados:
+            for index in selecionados:
+                caminho_pdf = arquivos[index]
+                os.startfile(caminho_pdf)
+
+    def controle_janela():
+        global janela_aberta
+        janela_aberta = False
+        root.destroy()
+
     root = tk.Tk()
     root.geometry("330x310+80+80")
     root.iconbitmap(relative_to_assets("robozinho.ico"))
-    root.configure(bg = "#CACACA")
+    root.configure(bg="#CACACA")
     root.title("Lista de Arquivos")
+    root.protocol("WM_DELETE_WINDOW", controle_janela)
 
     listbox = tk.Listbox(root, selectmode=tk.MULTIPLE, font=("Bahnschrift SemiLight SemiConde", 16 * -1), justify=tk.CENTER)
     listbox.pack(ipadx=80, ipady=10, padx=10, pady=10)
@@ -49,8 +95,16 @@ def modificar_lista():
     for item in lista:
         listbox.insert(tk.END, item)
 
-    btn_excluir = tk.Button(root, text="Excluir Selecionados", cursor="hand2", justify="center", font=("Bahnschrift SemiLight SemiConde", 17 * -1), command=excluir_itens)
-    btn_excluir.pack(fill=tk.Y, pady=10, ipadx=10, ipady=2)
+    frame_buttons = tk.Frame(root, bg="#CACACA")
+    frame_buttons.pack(fill=tk.BOTH, pady=10, padx=10)
+
+    btn_excluir = tk.Button(frame_buttons, text="Excluir Selecionados", cursor="hand2", justify="center",
+                            font=("Bahnschrift SemiLight SemiConde", 17 * -1), command=excluir_itens)
+    btn_excluir.pack(side=tk.LEFT, fill=tk.X, expand=True, padx=15, ipadx=5, ipady=2)
+
+    btn_abrir = tk.Button(frame_buttons, text="Abrir PDF", cursor="hand2", justify="center",
+                          font=("Bahnschrift SemiLight SemiConde", 17 * -1), command=abrir_pdf)
+    btn_abrir.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=15, ipadx=5, ipady=2)
 
     root.mainloop()
 
@@ -58,7 +112,7 @@ def modificar_lista():
 
 def selecionar_arquivo():
     global caminho_arq_comprovante, arquivos, label_arquivo, lista_controle
-    caminho_arq_comprovante = askopenfilenames(title="Selecione o arquivo de comprovantes.", filetypes=[("PDF Files", "*.pdf")])
+    caminho_arq_comprovante = askopenfilenames(title="Selecione o arquivo com os comprovantes.", filetypes=[("PDF Files", "*.pdf")])
     verificacao = [arq for arq in caminho_arq_comprovante if arq not in arquivos]
     arquivos = arquivos + verificacao
     label_arquivo.set("   ".join(arquivos[-1].split('/')[-3:]).split('.')[0])
@@ -152,7 +206,7 @@ button_2 = tk.Button(
     image=button_image_2,
     borderwidth=0,
     highlightthickness=0,
-    command=lambda: print("button_2 clicked"),
+    command=lambda: acionar_automacao(),
     relief="flat",
     cursor="hand2"
 )
