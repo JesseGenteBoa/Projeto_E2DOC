@@ -6,17 +6,20 @@ import tkinter as tk
 from time import sleep
 from tkinter import ttk
 from pathlib import Path
-from utils import zerar_lista_controle
+from guiLog import abrir_janela_resultado
 from tkinter.filedialog import askopenfilenames
+from utils import zerar_lista_controle, retornar_dt_festiva
+
 
 
 arquivos = []
 lista_controle = queue.Queue()
+em_execucao = queue.Queue()
 janela_aberta = False
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"C:\Users\User\OneDrive - EQS Engenharia Ltda\Área de Trabalho\Projeto E2DOC\build\build\assets\frame0")
+ASSETS_PATH = OUTPUT_PATH / Path(r"Imagens")
 
 
 
@@ -25,25 +28,79 @@ def relative_to_assets(path: str) -> Path:
 
 
 
+def executar():
+    global em_execucao, arquivos
+    em_execucao.put(1)
+
+    relatorio = docHudson.executar_automacao(arquivos)
+    
+    feriado = retornar_dt_festiva()
+
+    texto = tk.StringVar()
+    label_total_geral = tk.IntVar(value=len(relatorio))
+    label_ferias = tk.IntVar(value=0)
+    label_13 = tk.IntVar(value=0)
+    label_locacao = tk.IntVar(value=0)
+    label_vt = tk.IntVar(value=0)
+    label_va = tk.IntVar(value=0)
+    label_proventos = tk.IntVar(value=0)
+    label_rescisao = tk.IntVar(value=0)
+    label_fgts = tk.IntVar(value=0)
+
+    for item in relatorio:
+        if 'FÉRIAS' in item[0]:
+            label_ferias.set(label_ferias.get() + 1)
+        elif '13 SALARIO' in item[0]:
+            label_13.set(label_13.get() + 1)
+        elif 'LOCAÇÃO' in item[0]:
+            label_locacao.set(label_locacao.get() + 1)
+        elif 'VT' in item[0]:
+            label_vt.set(label_vt.get() + 1)
+        elif 'VA' in item[0]:
+            label_va.set(label_va.get() + 1)
+        elif 'PROVENTOS' in item[0]:
+            label_proventos.set(label_proventos.get() + 1)
+        elif 'RESCISÕES' in item[0]:
+            label_rescisao.set(label_rescisao.get() + 1)
+        elif 'MULTAS DE FGTS RESCISÓRIA' in item[0]:
+            label_fgts.set(label_fgts.get() + 1)
+
+    texto.set(f'''
+    Envio finalizado com sucesso!!!
+
+    {feriado}
+
+    Até a próxima!
+    ''')
+    threading.Thread(target=abrir_janela_resultado, args=(window, label_ferias, label_13, label_locacao, label_vt, label_va, label_proventos, label_rescisao, label_fgts, texto, label_total_geral), daemon=True).start()
+
+
+
 def acionar_automacao():
-    global arquivos
-    janela_espera = tk.Toplevel(window)
-    janela_espera.iconbitmap(relative_to_assets("robozinho.ico"))
-    janela_espera.title("Aguarde")
-    janela_espera.geometry("300x130+552+260")
+    global arquivos, em_execucao
+    if em_execucao.qsize() == 0 and arquivos:
+        janela_espera = tk.Toplevel(window)
+        janela_espera.iconbitmap(relative_to_assets("robozinho.ico"))
+        janela_espera.title("Aguarde...")
+        janela_espera.geometry("300x130+552+285")
 
-    label_espera = tk.Label(janela_espera, text="Executando, por favor aguarde...", font=("Bahnschrift SemiLight SemiConde", 18 * -1))
-    label_espera.pack(pady=20)
+        label_espera = tk.Label(janela_espera, text="Enviando...", font=("Bahnschrift SemiLight SemiConde", 18 * -1))
+        label_espera.pack(pady=20)
 
-    progresso = ttk.Progressbar(janela_espera, mode="indeterminate")
-    progresso.pack(pady=10, padx=1)
-    progresso.start()
+        progresso = ttk.Progressbar(janela_espera, mode="indeterminate")
+        progresso.pack(pady=10, padx=1, ipadx=50)
+        progresso.start()
 
-    def rodar_automacao():
-        relatorio, tipo_pag_incorreto, cpfs_errados, comp_nao_env = docHudson.executar_automacao(arquivos)
-        janela_espera.destroy()
+        def _acionar_automacao(em_execucao):
+            executar()
+            janela_espera.destroy()
+            zerar_lista_controle(em_execucao)
+            arquivos.clear()
+            label_arquivo.set("")
+        
+        janela_espera.resizable(False, False)
 
-    threading.Thread(target=rodar_automacao, daemon=True).start()
+        threading.Thread(target=_acionar_automacao, args=(em_execucao,), daemon=True).start()
 
 
 
@@ -106,6 +163,7 @@ def modificar_lista():
                           font=("Bahnschrift SemiLight SemiConde", 17 * -1), command=abrir_pdf)
     btn_abrir.pack(side=tk.RIGHT, fill=tk.X, expand=True, padx=15, ipadx=5, ipady=2)
 
+    root.resizable(False, False)
     root.mainloop()
 
 
