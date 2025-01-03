@@ -2,6 +2,7 @@ import os
 import base64
 import hashlib
 import smtplib
+from datetime import datetime
 from email.message import EmailMessage
 
 
@@ -38,6 +39,47 @@ def retornar_banco(caminho):
         case _ if "BB" in caminho:
             banco = "BB (BANCO DO BRASIL)"
     return banco
+
+
+
+def retornar_dt_festiva():
+    _, data = retornar_data()
+    match data:
+        case _ if "20/02" <= data <= "26/02":
+            feriado = "Semana de Carnaval! Aproveite a folia, as marchinhas e o confete!"
+        case "01/04":
+            feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!\n"Não sei, só sei que foi assim" - Chicó'''
+        case _ if "15/04" <= data <= "20/04":
+            feriado = "E que venham os chocolates!"
+        case "22/04":
+            feriado = "Dia da Terra! Vamos cuidar bem do nosso planeta."
+        case "01/05":
+            feriado = "Feliz dia do trabalhador para você que trabalha e sente muita dor."
+        case "11/05":
+            feriado = "Feliz dia das mães!"
+        case "05/06":
+            feriado = "Dia Mundial do Meio Ambiente! A natureza agradece!"
+        case "12/06":
+            feriado = "Para todos os sortudos que encontraram o amor, Feliz dia dos namorados!"
+        case _ if "16/06" <= data <= "24/06":
+            feriado = "Feliz São João! É festa junina com muito forró e canjica!"
+        case "10/08":
+            feriado = "Feliz dia dos pais!"
+        case "07/09":
+            feriado = "Viva a nossa independência!"
+        case "23/09":
+            feriado = "Bem-vinda, primavera! Flores para alegrar o dia."
+        case "12/10":
+            feriado = "Feliz dia das nossas crianças!"
+        case "31/10":
+            feriado = "Feliz dia do Saci, pessoal!"
+        case "02/11":
+            feriado = "Saudemos os nossos mortos. Eles estão diante do maior mistério da nossa existência, o estar ou o não estar."
+        case _ if "20/12" <= data <= "31/12":
+            feriado = "Boas festas!"
+        case _:
+            feriado = ""
+    return feriado
 
 
 
@@ -87,33 +129,93 @@ def criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de
 
 
 
-def enviar_email(relatorio, data_festiva):
-    match data_festiva:
-        case "01/04":
-            feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!\n"Não sei, só sei que foi assim" - Chicó'''
-        case _ if "15/04" <= data_festiva <= "20/04":
-            feriado = "E que venham os chocolates!"
-        case "01/05":
-            feriado = "Feliz dia do trabalhador para você que trabalha e sente muita dor."
-        case "11/05":
-            feriado = "Feliz dia das mães!"
-        case "12/06":
-            feriado = "Para todos os sortudos que encontraram o amor, Feliz dia dos namorados!"
-        case "10/08":
-            feriado = "Feliz dia dos pais!"
-        case "07/09":
-            feriado = "Viva a nossa independência!"
-        case "12/10":
-            feriado = "Feliz dia das nossas crianças!"
-        case "02/11":
-            feriado = "Saudemos os nossos mortos. Eles estão diante do maior mistério da nossa existência, o estar ou o não estar."
-        case _ if "20/12" <= data_festiva <= "31/12":
-            feriado = "Boas festas!"
-        case _:
-            feriado = ""
-
+def enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env):
+    feriado = retornar_dt_festiva()
     list_tratada = ["".join(lista) for lista in relatorio]
     string = "\n".join(list_tratada)
+
+    if tipo_pag_incorreto:
+        if len(tipo_pag_incorreto) > 1:
+            string_tipo = "".join(tipo_pag_incorreto)
+            tipo_pag_incorreto = f'''
+As seguintes chaves extraídas dos comprovantes apresentaram inconsistência:
+{string_tipo}'''
+        else:
+            string_tipo = tipo_pag_incorreto[0]
+            tipo_pag_incorreto = f'''
+A seguinte chave inserida em um comprovante apresentou inconsistência:
+{string_tipo}'''
+        
+
+    if compv_nao_env:
+        if len(compv_nao_env) > 1:
+            string_cne = " - ".join(compv_nao_env)
+            comp_nao_env = f'''
+Devido alguma inconsistência os seguintes comprovantes não foram enviados para o E2DOC:
+{string_cne}'''
+        else:
+            string_cne = " - ".join(compv_nao_env[0])
+            comp_nao_env = f'''
+Devido alguma inconsistência o seguinte comprovante não foi enviado para o E2DOC:
+{string_cne}'''
+            
+
+    if len(cpfs_errados) > 1:
+        string_cpf = ", ".join(cpfs_errados)
+        cpf_nao_encontrado = f'''
+Os seguintes CPFs não foram encontrados em nosso banco de dados:
+{string_cpf}'''
+    elif len(cpfs_errados) == 1:
+        cpf_nao_encontrado = f'''
+O CPF abaixo não foi encontrado em nosso banco de dados:
+{cpfs_errados[0]}'''
+        
+
+    if tipo_pag_incorreto and cpfs_errados and comp_nao_env:
+        texto = f'''Processo finalizado!    
+{cpf_nao_encontrado}
+{comp_nao_env}
+{tipo_pag_incorreto}
+{feriado}
+'''
+    elif tipo_pag_incorreto and cpfs_errados:
+        texto = f'''Processo finalizado!
+{cpf_nao_encontrado}
+{tipo_pag_incorreto}
+{feriado}
+'''
+    elif tipo_pag_incorreto and comp_nao_env:
+        texto = f'''Processo finalizado!
+{tipo_pag_incorreto}
+{comp_nao_env}
+{feriado}
+'''
+    elif cpfs_errados and comp_nao_env:
+        texto = f'''Processo finalizado!
+{cpf_nao_encontrado}
+{comp_nao_env}
+{feriado}
+'''
+    elif tipo_pag_incorreto:
+        texto = f'''Processo finalizado!
+{tipo_pag_incorreto}
+{feriado}
+'''
+    elif cpfs_errados:
+        texto = f'''Processo finalizado!
+{cpf_nao_encontrado}
+{feriado}
+'''
+    elif comp_nao_env:
+        texto = f'''Processo finalizado!
+{comp_nao_env}
+{feriado}
+'''
+    else:
+        texto = f'''Processo finalizado com sucesso!!!
+{feriado}
+'''
+
 
     corpo = f'''
 Olá, colaborador!
@@ -131,7 +233,7 @@ NOME  -  MODELO DE DOCUMENTO  -  COMPETENCIA
 
 
 
-{feriado}
+{texto}
 
 Grato pela colaboração.
 
@@ -139,7 +241,6 @@ Atensiosamente,
 Doc Hudson,
 
     '''
-
     carta = EmailMessage()
     carta.set_content(corpo)
     carta['Subject'] = "Enviados para o E2DOC"
@@ -171,3 +272,11 @@ def zerar_lista_controle(lista_controle):
     while not lista_controle.empty():
         lista_controle.get()
         lista_controle.task_done()
+
+
+
+def retornar_data():
+    agora = datetime.now()
+    data_formatada = str(agora.strftime("%Y-%m-%d"))
+    data = str(agora.strftime("%d/%m"))
+    return data_formatada, data
