@@ -219,7 +219,7 @@ def executar_automacao(arquivos_comprovante):
                             relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia])
                                 
 
-    utils.enviar_email(relatorio, data_festiva)     
+    utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
-    return relatorio, tipo_pag_incorreto, cpfs_errados, comp_nao_env
+    return relatorio
       
