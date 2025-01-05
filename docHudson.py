@@ -5,7 +5,6 @@ import utils
 import PyPDF2
 import conexaoDB
 import integradorE2DOC
-from datetime import datetime
 from tkinter import messagebox
 
 
@@ -13,7 +12,7 @@ from tkinter import messagebox
 def executar_automacao(arquivos_comprovante):
     tipo_pag_incorreto = []
     cpfs_errados = []
-    comp_nao_env = []
+    compv_nao_env = []
     relatorio = []
 
     cliente = integradorE2DOC.E2DocClient()
@@ -23,23 +22,18 @@ def executar_automacao(arquivos_comprovante):
         messagebox.showerror("Erro!", "Conexão não estabelecida com o E2DOC.")
         raise Exception("Conexão não estabelecida com o E2DOC")
 
-    agora = datetime.now()
-    data_formatada = agora.strftime("%Y-%m-%d")
-    data_formatada = str(data_formatada)
-    data_festiva = agora.strftime("%d/%m")
-    data_festiva = str(data_festiva)
-
+    data_formatada, _ = utils.retornar_data()
 
     for caminho in arquivos_comprovante:
         banco = utils.retornar_banco(caminho)
 
         # DADOS PERTINENTES PARA A MANIPULAÇÃO DOS ARQUIVOS 
-        data_de_pagamento = re.search(r"\b\d{2}-\d{2}\b", caminho).group()  # 16-12
+        diretorios_primordiais = re.split(r'Financeiro - COMPROVANTES - DESMEMBRAR', caminho)[0]
+        data_de_pagamento = re.search(r"\b\d{2}-\d{2}\b", caminho).group()    # 16-12
         competencia = re.search(r"\b\d{4}\\\d{2}\b", caminho).group()
-        ano = competencia.split("\\")[0]
-        ano_vigente = ano   # 2024
-        mes = competencia.split("\\")[1]
-        mes_vigente = utils.retornar_mes(mes)   # 12 - DEZEMBRO
+        mes_vigente = utils.retornar_mes(competencia.split("\\")[1])   # 12 - DEZEMBRO
+        ano_vigente = competencia.split("\\")[0]   # 2024
+
         competencia = competencia.split("\\")[1] + "/" + competencia.split("\\")[0]     # 12/2024
 
 
@@ -92,67 +86,67 @@ def executar_automacao(arquivos_comprovante):
 
                     match tipo_pagamento:
                         case 'LOC':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante Frota\LOCAÇÃO VEICULO\MANUAL"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante Frota\LOCAÇÃO VEICULO\MANUAL"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento)   
                             modelo_de_documento = 'LOCAÇÃO'
                             
                         case 'VAT':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante Beneficios\VALE TRANSPORTES"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante Beneficios\VALE TRANSPORTES"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='VT', pedido=pedido)   
                             modelo_de_documento = 'VT'
 
                         case 'VAR':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante Beneficios\VALE ALIMENTACAO"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante Beneficios\VALE ALIMENTACAO"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='VA', pedido=pedido)
                             modelo_de_documento = 'VA'
 
                         case 'FOL':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\PROVENTOS\PAGTOS MANUAIS"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\PROVENTOS\PAGTOS MANUAIS"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo="FOLHA GERAL")
                             modelo_de_documento = 'PROVENTOS'
 
                         case 'ARV':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\PROVENTOS\PAGTOS MANUAIS"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\PROVENTOS\PAGTOS MANUAIS"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo="ADTO REVAP")
                             modelo_de_documento = 'PROVENTOS'
 
                         case 'ARP':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\PROVENTOS\PAGTOS MANUAIS"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\PROVENTOS\PAGTOS MANUAIS"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo="ADTO REPAR")
                             modelo_de_documento = 'PROVENTOS'
                         
                         case '13A':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\13 SALARIO"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\13 SALARIO"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='13 SALARIO')
                             modelo_de_documento = '13 SALARIO'
 
                         case '131':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\13 SALARIO"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\13 SALARIO"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='1ª 13 SALARIO')
                             modelo_de_documento = '13 SALARIO'
 
                         case '132':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\13 SALARIO"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\13 SALARIO"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='2ª 13 SALARIO')
                             modelo_de_documento = '13 SALARIO'
                         
                         case '13T':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\13 SALARIO"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\13 SALARIO"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='TJ 13 SALARIO')
                             modelo_de_documento = '13 SALARIO'
                         
                         case 'RES':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\RESCISOES"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\RESCISOES"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento)
                             modelo_de_documento = 'RESCISÕES'
 
                         case 'FER':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\FERIAS"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\FERIAS"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento)
                             modelo_de_documento = 'FÉRIAS'
 
                         case 'FGT':
-                            diretorio_destino = r"C:\Users\User\EQS Engenharia Ltda\Comprovantes - Comprovante DP\MULTA FGTS"
+                            diretorio_destino = fr"{diretorios_primordiais}Comprovantes - Comprovante DP\MULTA FGTS"
                             diretorio_destino = utils.criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento)
                             modelo_de_documento = 'MULTAS DE FGTS RESCISÓRIA'
 
@@ -186,7 +180,7 @@ def executar_automacao(arquivos_comprovante):
                                     cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho)
                                     cliente.finalizar_envio()
                                 except Exception as e:
-                                    comp_nao_env.append([nome, modelo_de_documento, chave, e])
+                                    compv_nao_env.append([nome, modelo_de_documento, chave, e])
                             
                             case 'LOC':
                                 try:
@@ -195,7 +189,7 @@ def executar_automacao(arquivos_comprovante):
                                     cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho, modelo_de_pasta='FINANCEIRO - FROTA')
                                     cliente.finalizar_envio()
                                 except Exception as e:
-                                    comp_nao_env.append([nome, modelo_de_documento, chave, e])
+                                    compv_nao_env.append([nome, modelo_de_documento, chave, e])
                             
                             case 'VAR' | 'VAT':
                                 try:
@@ -204,7 +198,7 @@ def executar_automacao(arquivos_comprovante):
                                     cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho, modelo_de_pasta='FINANCEIRO - BENEFICIOS')
                                     cliente.finalizar_envio()
                                 except Exception as e:
-                                    comp_nao_env.append([nome, modelo_de_documento, chave, e])
+                                    compv_nao_env.append([nome, modelo_de_documento, chave, e])
                                 
                             case _:
                                 try:
@@ -213,13 +207,14 @@ def executar_automacao(arquivos_comprovante):
                                     cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho)
                                     cliente.finalizar_envio()
                                 except Exception as e:
-                                    comp_nao_env.append([nome, modelo_de_documento, chave, e])
+                                    compv_nao_env.append([nome, modelo_de_documento, chave, e])
 
-                        if chave not in comp_nao_env:
+                        if chave not in compv_nao_env:
                             relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia])
                                 
 
     utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
     return relatorio
-      
+
+  
