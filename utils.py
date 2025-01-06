@@ -45,12 +45,8 @@ def retornar_banco(caminho):
 def retornar_dt_festiva():
     _, data = retornar_data()
     match data:
-        case _ if "20/02" <= data <= "26/02":
-            feriado = "Semana de Carnaval! Aproveite a folia, as marchinhas e o confete!"
         case "01/04":
             feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!\n"Não sei, só sei que foi assim" - Chicó'''
-        case _ if "15/04" <= data <= "20/04":
-            feriado = "E que venham os chocolates!"
         case "22/04":
             feriado = "Dia da Terra! Vamos cuidar bem do nosso planeta."
         case "01/05":
