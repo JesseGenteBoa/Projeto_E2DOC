@@ -128,7 +128,7 @@ def criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de
 def enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env):
     feriado = retornar_dt_festiva()
     list_tratada = ["".join(lista) for lista in relatorio]
-    string = "\n".join(list_tratada)
+    string = "   ".join(list_tratada)
 
     if tipo_pag_incorreto:
         if len(tipo_pag_incorreto) > 1:
@@ -156,13 +156,14 @@ Devido alguma inconsistência o seguinte comprovante não foi enviado para o E2D
 {string_cne}'''
             
 
-    if len(cpfs_errados) > 1:
-        string_cpf = ", ".join(cpfs_errados)
-        cpf_nao_encontrado = f'''
+    if cpfs_errados:
+        if len(cpfs_errados) > 1:
+            string_cpf = ", ".join(cpfs_errados)
+            cpf_nao_encontrado = f'''
 Os seguintes CPFs não foram encontrados em nosso banco de dados:
 {string_cpf}'''
-    elif len(cpfs_errados) == 1:
-        cpf_nao_encontrado = f'''
+        else:
+            cpf_nao_encontrado = f'''
 O CPF abaixo não foi encontrado em nosso banco de dados:
 {cpfs_errados[0]}'''
         
@@ -276,5 +277,4 @@ def retornar_data():
     data_formatada = str(agora.strftime("%Y-%m-%d"))
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
-
-  
+      
