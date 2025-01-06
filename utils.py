@@ -202,7 +202,7 @@ O CPF abaixo não foi encontrado em nosso banco de dados:
 {cpf_nao_encontrado}
 {feriado}
 '''
-    elif comp_nao_env:
+    elif compv_nao_env:
         texto = f'''Processo finalizado!
 {comp_nao_env}
 {feriado}
@@ -241,7 +241,7 @@ Doc Hudson,
     carta.set_content(corpo)
     carta['Subject'] = "Enviados para o E2DOC"
     carta['From'] = "eqsengenharia@eqsengenharia.com.br"
-    carta['To'] = "Financeiro@eqsengenharia.com.br"
+    carta['To'] = "jesse.silva@eqsengenharia.com.br"
 
     try:
         with smtplib.SMTP_SSL('grid331.mailgrid.com.br', 465) as servidor:
@@ -276,3 +276,5 @@ def retornar_data():
     data_formatada = str(agora.strftime("%Y-%m-%d"))
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
+
+  
