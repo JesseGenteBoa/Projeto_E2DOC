@@ -32,12 +32,12 @@ def executar():
     global em_execucao, arquivos
     em_execucao.put(1)
 
-    relatorio = docHudson.executar_automacao(arquivos)
+    modelos_enviados = docHudson.executar_automacao(arquivos)
     
     feriado = retornar_dt_festiva()
 
     texto = tk.StringVar()
-    label_total_geral = tk.IntVar(value=len(relatorio))
+    label_total_geral = tk.IntVar(value=len(modelos_enviados))
     label_ferias = tk.IntVar(value=0)
     label_13 = tk.IntVar(value=0)
     label_locacao = tk.IntVar(value=0)
@@ -47,30 +47,31 @@ def executar():
     label_rescisao = tk.IntVar(value=0)
     label_fgts = tk.IntVar(value=0)
 
-    for item in relatorio:
-        if 'FÉRIAS' in item[0]:
-            label_ferias.set(label_ferias.get() + 1)
-        elif '13 SALARIO' in item[0]:
-            label_13.set(label_13.get() + 1)
-        elif 'LOCAÇÃO' in item[0]:
-            label_locacao.set(label_locacao.get() + 1)
-        elif 'VT' in item[0]:
-            label_vt.set(label_vt.get() + 1)
-        elif 'VA' in item[0]:
-            label_va.set(label_va.get() + 1)
-        elif 'PROVENTOS' in item[0]:
-            label_proventos.set(label_proventos.get() + 1)
-        elif 'RESCISÕES' in item[0]:
-            label_rescisao.set(label_rescisao.get() + 1)
-        elif 'MULTAS DE FGTS RESCISÓRIA' in item[0]:
-            label_fgts.set(label_fgts.get() + 1)
+    for modelo_documento in modelos_enviados:
+        match modelo_documento:
+            case 'FÉRIAS':
+                label_ferias.set(label_ferias.get() + 1)
+            case '13 SALARIO':
+                label_13.set(label_13.get() + 1)
+            case 'LOCAÇÃO':
+                label_locacao.set(label_locacao.get() + 1)
+            case 'VT':
+                label_vt.set(label_vt.get() + 1)
+            case 'VA':
+                label_va.set(label_va.get() + 1)
+            case 'PROVENTOS':
+                label_proventos.set(label_proventos.get() + 1)
+            case 'RESCISÕES':
+                label_rescisao.set(label_rescisao.get() + 1)
+            case 'MULTAS DE FGTS RESCISÓRIA':
+                label_fgts.set(label_fgts.get() + 1)
 
     texto.set(f'''
-    Envio finalizado com sucesso!!!
+Envio finalizado com sucesso!!!
 
-    {feriado}
+{feriado}
 
-    Até a próxima!
+Até a próxima!
     ''')
     threading.Thread(target=abrir_janela_resultado, args=(window, label_ferias, label_13, label_locacao, label_vt, label_va, label_proventos, label_rescisao, label_fgts, texto, label_total_geral), daemon=True).start()
 
@@ -140,7 +141,7 @@ def modificar_lista():
         root.destroy()
 
     root = tk.Tk()
-    root.geometry("330x310+80+80")
+    root.geometry("331x310+80+80")
     root.iconbitmap(relative_to_assets("robozinho.ico"))
     root.configure(bg="#CACACA")
     root.title("Lista de Arquivos")
@@ -294,3 +295,6 @@ button_3.place(
 
 window.resizable(False, False)
 window.mainloop()
+
+
+  
