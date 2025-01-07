@@ -5,7 +5,6 @@ import utils
 import PyPDF2
 import conexaoDB
 import integradorE2DOC
-from time import sleep
 from tkinter import messagebox
 
 
