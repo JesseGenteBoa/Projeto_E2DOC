@@ -80,6 +80,15 @@ def retornar_dt_festiva():
 
 
 def criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de_pagamento, tipo='Simples', pedido=''):
+    if tipo == "FOLHA GERAL":
+        mes = mes_vigente[:2]
+        if mes == "01":
+            ano_vigente = str(int(ano_vigente) - 1)
+            mes_vigente = retornar_mes("12")
+        else:
+            mes = int(mes) - 1
+            mes_vigente = retornar_mes(f"{mes:02}")
+
     if 'RESCISOES' in diretorio_destino:
         ano_vigente = f'RESCISAO {ano_vigente}'
 
@@ -128,7 +137,9 @@ def criar_arvore_diretorios(diretorio_destino, ano_vigente, mes_vigente, data_de
 def enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env):
     feriado = retornar_dt_festiva()
     list_tratada = ["".join(lista) for lista in relatorio]
-    string = "   ".join(list_tratada)
+    string = '''
+
+'''.join(list_tratada)
 
     if tipo_pag_incorreto:
         if len(tipo_pag_incorreto) > 1:
@@ -169,47 +180,47 @@ O CPF abaixo não foi encontrado em nosso banco de dados:
         
 
     if tipo_pag_incorreto and cpfs_errados and comp_nao_env:
-        texto = f'''Processo finalizado!    
+        texto = f'''Envio finalizado!    
 {cpf_nao_encontrado}
 {comp_nao_env}
 {tipo_pag_incorreto}
 {feriado}
 '''
     elif tipo_pag_incorreto and cpfs_errados:
-        texto = f'''Processo finalizado!
+        texto = f'''Envio finalizado!
 {cpf_nao_encontrado}
 {tipo_pag_incorreto}
 {feriado}
 '''
     elif tipo_pag_incorreto and comp_nao_env:
-        texto = f'''Processo finalizado!
+        texto = f'''Envio finalizado!
 {tipo_pag_incorreto}
 {comp_nao_env}
 {feriado}
 '''
     elif cpfs_errados and comp_nao_env:
-        texto = f'''Processo finalizado!
+        texto = f'''Envio finalizado!
 {cpf_nao_encontrado}
 {comp_nao_env}
 {feriado}
 '''
     elif tipo_pag_incorreto:
-        texto = f'''Processo finalizado!
+        texto = f'''Envio finalizado!
 {tipo_pag_incorreto}
 {feriado}
 '''
     elif cpfs_errados:
-        texto = f'''Processo finalizado!
+        texto = f'''Envio finalizado!
 {cpf_nao_encontrado}
 {feriado}
 '''
     elif compv_nao_env:
-        texto = f'''Processo finalizado!
+        texto = f'''Envio finalizado!
 {comp_nao_env}
 {feriado}
 '''
     else:
-        texto = f'''Processo finalizado com sucesso!!!
+        texto = f'''Envio finalizado com sucesso!!!
 {feriado}
 '''
 
@@ -225,6 +236,7 @@ Envios totais: {len(relatorio)}
 Processos enviados:
 
 NOME  -  MODELO DE DOCUMENTO  -  COMPETENCIA
+
 
 {string}
 
@@ -277,4 +289,5 @@ def retornar_data():
     data_formatada = str(agora.strftime("%Y-%m-%d"))
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
-      
+
+  
