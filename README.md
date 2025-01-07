@@ -14,4 +14,4 @@ Existe uma lista de processos que podem ocorrer pagamento manual, todos mapeados
 Através de uma informação complementar distinta inserida no comprovante "manual" - convencionada em reuniões de levantamento de requisitos onde determinou-se a criação de uma chave de identificação - faz-se então a distinção dos comprovantes. Essa chave obedece a seguinte estrutura: CHAVECPFCÓDDENATUREZA; CHAVE00000000000FER.
 
 A automação irá ler cada comprovante do arquivo lote, separar aquele pago manualmente, coletar o CPF do colaborador, destiná-lo a sua pasta processual final, e, através do CPF, buscar os dados pertinentes ao preenchimento do formulário do E2DOC direto no banco de dados da empresa, depois integrar os tais comprovantes à plataforma através da API que eles disponibilizam para os seus clientes.
-O projeto ainda está em desenvolvimento.
+Essa é a versão Beta que já está em produção. Durante um período determinado a automação estará funcionando nessa versão, e caso alguma excepcionalidade aconteça, será tratada.
