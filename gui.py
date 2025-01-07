@@ -11,11 +11,10 @@ from tkinter.filedialog import askopenfilenames
 from utils import zerar_lista_controle, retornar_dt_festiva
 
 
-
-arquivos = []
 lista_controle = queue.Queue()
 em_execucao = queue.Queue()
 janela_aberta = False
+arquivos = []
 
 
 OUTPUT_PATH = Path(__file__).parent
@@ -36,43 +35,43 @@ def executar():
     
     feriado = retornar_dt_festiva()
 
-    texto = tk.StringVar()
     label_total_geral = tk.IntVar(value=len(modelos_enviados))
-    label_ferias = tk.IntVar(value=0)
-    label_13 = tk.IntVar(value=0)
-    label_locacao = tk.IntVar(value=0)
-    label_vt = tk.IntVar(value=0)
-    label_va = tk.IntVar(value=0)
     label_proventos = tk.IntVar(value=0)
     label_rescisao = tk.IntVar(value=0)
+    label_locacao = tk.IntVar(value=0)
+    label_ferias = tk.IntVar(value=0)
     label_fgts = tk.IntVar(value=0)
+    label_13 = tk.IntVar(value=0)
+    label_vt = tk.IntVar(value=0)
+    label_va = tk.IntVar(value=0)
+    texto = tk.StringVar()
 
     for modelo_documento in modelos_enviados:
         match modelo_documento:
-            case 'FÉRIAS':
-                label_ferias.set(label_ferias.get() + 1)
+            case 'MULTAS DE FGTS RESCISÓRIA':
+                label_fgts.set(label_fgts.get() + 1)
             case '13 SALARIO':
                 label_13.set(label_13.get() + 1)
-            case 'LOCAÇÃO':
-                label_locacao.set(label_locacao.get() + 1)
-            case 'VT':
-                label_vt.set(label_vt.get() + 1)
-            case 'VA':
-                label_va.set(label_va.get() + 1)
             case 'PROVENTOS':
                 label_proventos.set(label_proventos.get() + 1)
             case 'RESCISÕES':
                 label_rescisao.set(label_rescisao.get() + 1)
-            case 'MULTAS DE FGTS RESCISÓRIA':
-                label_fgts.set(label_fgts.get() + 1)
-
+            case 'LOCAÇÃO':
+                label_locacao.set(label_locacao.get() + 1)
+            case 'FÉRIAS':
+                label_ferias.set(label_ferias.get() + 1)
+            case 'VT':
+                label_vt.set(label_vt.get() + 1)
+            case 'VA':
+                label_va.set(label_va.get() + 1)
+                
     texto.set(f'''
 Envio finalizado com sucesso!!!
 
 {feriado}
 
 Até a próxima!
-    ''')
+''')
     threading.Thread(target=abrir_janela_resultado, args=(window, label_ferias, label_13, label_locacao, label_vt, label_va, label_proventos, label_rescisao, label_fgts, texto, label_total_geral), daemon=True).start()
 
 
@@ -292,9 +291,5 @@ button_3.place(
     width=468.0,
     height=52.0
 )
-
 window.resizable(False, False)
 window.mainloop()
-
-
-  
