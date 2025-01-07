@@ -26,7 +26,6 @@ def executar_automacao(arquivos_comprovante):
     data_formatada, _ = utils.retornar_data()
 
     for caminho in arquivos_comprovante:
-        print(caminho)
         banco = utils.retornar_banco(caminho)
 
         # DADOS PERTINENTES PARA A MANIPULAÇÃO DOS ARQUIVOS 
