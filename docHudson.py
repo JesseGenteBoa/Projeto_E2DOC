@@ -28,14 +28,13 @@ def executar_automacao(arquivos_comprovante):
     for caminho in arquivos_comprovante:
         banco = utils.retornar_banco(caminho)
 
-        # DADOS PERTINENTES PARA A MANIPULAÇÃO DOS ARQUIVOS 
         diretorios_primordiais = re.split(r'Financeiro - COMPROVANTES - DESMEMBRAR', caminho)[0]
-        data_de_pagamento = re.search(r"\b\d{2}-\d{2}\b", caminho).group()    # 16-12
+        data_de_pagamento = re.search(r"\b\d{2}-\d{2}\b", caminho).group()
         competencia = re.search(r"\b\d{4}/\d{2}\b", caminho).group()
-        mes_vigente = utils.retornar_mes(competencia.split("/")[1])   # 12 - DEZEMBRO
-        ano_vigente = competencia.split("/")[0]   # 2024
+        mes_vigente = utils.retornar_mes(competencia.split("/")[1])
+        ano_vigente = competencia.split("/")[0]
 
-        competencia = competencia.split("/")[1] + "/" + competencia.split("/")[0]     # 12/2024
+        competencia = competencia.split("/")[1] + "/" + competencia.split("/")[0]
 
 
         with open(caminho, 'rb') as file:
@@ -50,19 +49,20 @@ def executar_automacao(arquivos_comprovante):
                 writer = PyPDF2.PdfWriter()
                 writer.add_page(page)
                 texto = page.extract_text().replace(" ", "").upper()
-                manual = re.search(r"CHAVE\d{11}[A-Z0-9]{3}", texto)
-                manual_pedido = re.search(r"CHAVE\d{11}[A-Z0-9]{3}[A-Za-z0-9]+", texto)
+                chave_comp = re.search(r"CHAVE\d{11}[A-Z0-9]{3}", texto).group()
+                tipo_pagamento = chave_comp[-3:]
+                if tipo_pagamento in ['VAR', 'VAT']:
+                    chave_comp_pedido = re.search(r"CHAVE\d{11}[A-Z0-9]{3}[A-Za-z0-9]{6}", texto).group()
+                else:
+                    chave_comp_pedido = False
 
-                if manual or manual_pedido:
-                    
-                    # DADOS PERTINENTES PARA O E2DOC E PARA A DISTRIBUICAO DOS ARQUIVOS
-                    if manual_pedido:
-                        chave = manual_pedido.group()
-                        pedido = chave[-6:].upper()
-                        tipo_pagamento = chave[-9:-6]
+                if chave_comp:
+                
+                    if chave_comp_pedido:
+                        chave = chave_comp_pedido
+                        pedido = chave[-6:]
                     else:
-                        chave = manual.group()
-                        tipo_pagamento = chave[-3:]
+                        chave = chave_comp
 
                     cpf = chave[5:16]
                     try:
@@ -162,9 +162,6 @@ def executar_automacao(arquivos_comprovante):
                         with open(caminho_arq, 'wb') as arq_saida:
                             writer.write(arq_saida)
 
-
-                        # PARTE DO E2DOC
-
                         conteudo_base64, hash_md5, tamanho = utils.ler_arquivo(caminho_arq)
                         protocolo = str(uuid.uuid4())
                         file_name = protocolo + "_1_0.pdf"
@@ -173,8 +170,13 @@ def executar_automacao(arquivos_comprovante):
                         match tipo_pagamento:
                             case 'FOL':
                                 competencia_folha = int(competencia.split("/")[0])
-                                competencia_folha -= 1
-                                competencia_folha = str(competencia_folha) + "/" + competencia.split("/")[1]
+                                if competencia_folha == 1:
+                                    ano = int(competencia.split("/")[1]) - 1
+                                    competencia_folha = "12"
+                                    competencia_folha = competencia_folha + "/" + str(ano)
+                                else:
+                                    competencia_folha -= 1
+                                    competencia_folha = f"{competencia_folha:02}" + "/" + competencia.split("/")[1]
                                 try:
                                     cliente.iniciar_sincronismo(protocolo, competencia_folha, cpf, nome, banco, regiao, centro_de_custo)
                                     cliente.enviar_partes_do_arquivo(file_name, conteudo_base64)
@@ -211,7 +213,10 @@ def executar_automacao(arquivos_comprovante):
                                     compv_nao_env.append([nome, modelo_de_documento, chave, e])
 
                         if chave not in compv_nao_env:
-                            relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia])
+                            if tipo_pagamento == 'FOL':
+                                relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia_folha])
+                            else:
+                                relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia])
                             modelos_enviados.append(modelo_de_documento)
                                 
 
