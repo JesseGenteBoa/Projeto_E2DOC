@@ -46,7 +46,8 @@ def retornar_dt_festiva():
     _, data = retornar_data()
     match data:
         case "01/04":
-            feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!\n"Não sei, só sei que foi assim" - Chicó'''
+            feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!
+"Não sei, só sei que foi assim" - Chicó'''
         case "22/04":
             feriado = "Dia da Terra! Vamos cuidar bem do nosso planeta."
         case "01/05":
