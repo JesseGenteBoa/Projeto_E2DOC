@@ -49,7 +49,11 @@ def executar_automacao(arquivos_comprovante):
                 writer = PyPDF2.PdfWriter()
                 writer.add_page(page)
                 texto = page.extract_text().replace(" ", "").upper()
-                chave_comp = re.search(r"CHAVE\d{11}[A-Z0-9]{3}", texto).group()
+                try:
+                    chave_comp = re.search(r"CHAVE\d{11}[A-Z0-9]{3}", texto).group()
+                except AttributeError:
+                    continue
+                    
                 tipo_pagamento = chave_comp[-3:]
                 if tipo_pagamento in ['VAR', 'VAT']:
                     chave_comp_pedido = re.search(r"CHAVE\d{11}[A-Z0-9]{3}[A-Za-z0-9]{6}", texto).group()
@@ -223,3 +227,4 @@ def executar_automacao(arquivos_comprovante):
     utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
     return modelos_enviados
+  
