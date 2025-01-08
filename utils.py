@@ -226,8 +226,7 @@ O CPF abaixo não foi encontrado em nosso banco de dados:
 '''
 
 
-    corpo = f'''
-Olá, colaborador!
+    corpo = f'''Olá, colaborador!
 
 Segue um relatório do que foi enviado pela automação para o E2DOC;
 
@@ -291,4 +290,3 @@ def retornar_data():
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
 
-  
