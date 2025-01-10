@@ -18,10 +18,10 @@ def executar_automacao(arquivos_comprovante):
 
     cliente = integradorE2DOC.E2DocClient()
 
-    conectado = cliente.autenticar()
-    if conectado == "Conexão não estabelecida entre os sistemas":
-        messagebox.showerror("Erro!", "Conexão não estabelecida com o E2DOC.")
-        raise Exception("Conexão não estabelecida com o E2DOC")
+    if cliente.autenticar() == "Conexão não estabelecida entre os sistemas":
+        erro = "Conexão não estabelecida com o E2DOC."
+        messagebox.showerror("Erro!", erro)
+        raise Exception(erro)
 
     data_formatada, _ = utils.retornar_data()
 
