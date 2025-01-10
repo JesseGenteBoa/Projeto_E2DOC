@@ -161,7 +161,6 @@ def executar_automacao(arquivos_comprovante):
                     protocolo = str(uuid.uuid4())
                     file_name = protocolo + "_1_0.pdf"
 
-            
                     match tipo_pagamento:
                         case 'FOL':
                             competencia_folha = int(competencia.split("/")[0])
@@ -206,6 +205,7 @@ def executar_automacao(arquivos_comprovante):
                             except Exception as e:
                                 compv_nao_env.append([nome, modelo_de_documento, chave_comp, e])
 
+
                     if chave_comp not in compv_nao_env:
                         if tipo_pagamento == 'FOL':
                             relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia_folha])
@@ -217,4 +217,4 @@ def executar_automacao(arquivos_comprovante):
     utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
     return modelos_enviados
-      
+    
