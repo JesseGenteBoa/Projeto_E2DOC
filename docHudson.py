@@ -56,12 +56,10 @@ def executar_automacao(arquivos_comprovante):
 
                 tipo_pagamento = chave_comp[-3:]
                 if tipo_pagamento in ['VAR', 'VAT']:
-                    chave = re.search(r"CHAVE\d{11}[A-Z0-9]{3}[A-Za-z0-9]{6}", texto).group()
-                    pedido = chave[-6:]
-                else:
-                    chave = chave_comp
+                    chave_comp = re.search(r"CHAVE\d{11}[A-Z0-9]{3}[A-Za-z0-9]{6}", texto).group()
+                    pedido = chave_comp[-6:]
 
-                cpf = chave[5:16]
+                cpf = chave_comp[5:16]
                 try:
                     regiao, centro_de_custo, nome = conexaoDB.consultar_db(cpf)
                 except:
@@ -149,13 +147,13 @@ def executar_automacao(arquivos_comprovante):
                         modelo_de_documento = 'MULTAS DE FGTS RESCISÓRIA'
 
                     case _:
-                        tipo_pag_incorreto.append(chave)
+                        tipo_pag_incorreto.append(chave_comp)
 
 
                 caminho_arq = os.path.join(diretorio_destino, nome_arquivo)
                 
 
-                if chave not in tipo_pag_incorreto and cpf not in cpfs_errados:
+                if chave_comp not in tipo_pag_incorreto and cpf not in cpfs_errados:
                     with open(caminho_arq, 'wb') as arq_saida:
                         writer.write(arq_saida)
 
@@ -179,7 +177,7 @@ def executar_automacao(arquivos_comprovante):
                                 cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho)
                                 cliente.finalizar_envio()
                             except Exception as e:
-                                compv_nao_env.append([nome, modelo_de_documento, chave, e])
+                                compv_nao_env.append([nome, modelo_de_documento, chave_comp, e])
                         
                         case 'LOC':
                             try:
@@ -188,7 +186,7 @@ def executar_automacao(arquivos_comprovante):
                                 cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho, modelo_de_pasta='FINANCEIRO - FROTA')
                                 cliente.finalizar_envio()
                             except Exception as e:
-                                compv_nao_env.append([nome, modelo_de_documento, chave, e])
+                                compv_nao_env.append([nome, modelo_de_documento, chave_comp, e])
                         
                         case 'VAR' | 'VAT':
                             try:
@@ -197,7 +195,7 @@ def executar_automacao(arquivos_comprovante):
                                 cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho, modelo_de_pasta='FINANCEIRO - BENEFICIOS')
                                 cliente.finalizar_envio()
                             except Exception as e:
-                                compv_nao_env.append([nome, modelo_de_documento, chave, e])
+                                compv_nao_env.append([nome, modelo_de_documento, chave_comp, e])
                             
                         case _:
                             try:
@@ -206,9 +204,9 @@ def executar_automacao(arquivos_comprovante):
                                 cliente.efetivar_envio(modelo_de_documento, data_formatada, hash_md5, tamanho)
                                 cliente.finalizar_envio()
                             except Exception as e:
-                                compv_nao_env.append([nome, modelo_de_documento, chave, e])
+                                compv_nao_env.append([nome, modelo_de_documento, chave_comp, e])
 
-                    if chave not in compv_nao_env:
+                    if chave_comp not in compv_nao_env:
                         if tipo_pagamento == 'FOL':
                             relatorio.append([nome, "  -  ", modelo_de_documento, "  -  ", competencia_folha])
                         else:
@@ -219,3 +217,4 @@ def executar_automacao(arquivos_comprovante):
     utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
     return modelos_enviados
+      
