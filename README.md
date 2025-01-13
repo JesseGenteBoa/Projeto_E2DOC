@@ -1,7 +1,7 @@
 # Automação E2DOC
 
-Automação que estou desenvolvendo para a empresa em que trabalho. Essa automação terá uma interface para interação do usuário, 
-e fará conexão com uma plataforma de gestão de documentos voltada para o setor jurídico chamada E2DOC.
+Automação que desenvolvi para a empresa em que trabalho. Essa automação conta com uma interface para interação do usuário, 
+e faz conexão com uma plataforma de gestão de documentos voltada para o setor jurídico chamada E2DOC.
 
 O objetivo dessa automação é alimentar a plataforma E2DOC com os comprovantes de pagamento feitos isoladamente no portal de um banco determinado. 
 Em detalhes, o que ocorre é que a maioria dos pagamentos feitos pelo setor financeiro são realizados de forma automática pelo sistema ERP da empresa, 
