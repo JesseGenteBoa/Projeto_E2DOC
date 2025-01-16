@@ -1,6 +1,4 @@
 import os
-import base64
-import hashlib
 import smtplib
 from datetime import datetime
 from email.message import EmailMessage
@@ -254,7 +252,7 @@ Doc Hudson,
     carta.set_content(corpo)
     carta['Subject'] = "Enviados para o E2DOC"
     carta['From'] = "eqsengenharia@eqsengenharia.com.br"
-    carta['To'] = ["Financeiro@eqsengenharia.com.br", "jesse.silva@eqsengenharia.com.br"]
+    carta['To'] = "Financeiro@eqsengenharia.com.br"
 
     try:
         with smtplib.SMTP_SSL('grid331.mailgrid.com.br', 465) as servidor:
@@ -262,16 +260,6 @@ Doc Hudson,
             servidor.send_message(carta)
     except Exception as e:
         pass
-
-
-
-def ler_arquivo(caminho):
-    tamanho = os.path.getsize(caminho)
-    with open(caminho, 'rb') as arquivo:
-        conteudo = arquivo.read()
-        conteudo_base64 = base64.b64encode(conteudo).decode("utf-8")
-        md5_hash = hashlib.md5(conteudo).hexdigest().upper()
-    return conteudo_base64, md5_hash, tamanho
 
 
 
@@ -287,4 +275,6 @@ def retornar_data():
     data_formatada = str(agora.strftime("%Y-%m-%d"))
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
+
+
    
