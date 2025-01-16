@@ -267,12 +267,10 @@ Doc Hudson,
 
 def ler_arquivo(caminho):
     tamanho = os.path.getsize(caminho)
-
     with open(caminho, 'rb') as arquivo:
         conteudo = arquivo.read()
         conteudo_base64 = base64.b64encode(conteudo).decode("utf-8")
         md5_hash = hashlib.md5(conteudo).hexdigest().upper()
-
     return conteudo_base64, md5_hash, tamanho
 
 
@@ -289,4 +287,4 @@ def retornar_data():
     data_formatada = str(agora.strftime("%Y-%m-%d"))
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
- 
+   
