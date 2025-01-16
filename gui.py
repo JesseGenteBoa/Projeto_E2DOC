@@ -18,7 +18,7 @@ arquivos = []
 
 
 OUTPUT_PATH = Path(__file__).parent
-ASSETS_PATH = OUTPUT_PATH / Path(r"Imagens")
+ASSETS_PATH = OUTPUT_PATH / Path(r"assets")
 
 
 
