@@ -31,8 +31,11 @@ def executar():
     global em_execucao, arquivos
     em_execucao.put(1)
 
-    modelos_enviados = docHudson.executar_automacao(arquivos)
-    
+    try:
+        modelos_enviados = docHudson.executar_automacao(arquivos)
+    except FileNotFoundError as e:
+        tk.messagebox.showerror("Erro!", e)
+
     feriado = retornar_dt_festiva()
 
     label_total_geral = tk.IntVar(value=len(modelos_enviados))
@@ -291,5 +294,6 @@ button_3.place(
     width=468.0,
     height=52.0
 )
+
 window.resizable(False, False)
 window.mainloop()
