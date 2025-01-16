@@ -33,7 +33,6 @@ def executar_automacao(arquivos_comprovante):
         competencia = re.search(r"\b\d{4}/\d{2}\b", caminho).group()
         mes_vigente = utils.retornar_mes(competencia.split("/")[1])
         ano_vigente = competencia.split("/")[0]
-
         competencia = competencia.split("/")[1] + "/" + competencia.split("/")[0]
 
 
@@ -157,7 +156,11 @@ def executar_automacao(arquivos_comprovante):
                     with open(caminho_arq, 'wb') as arq_saida:
                         writer.write(arq_saida)
 
-                    conteudo_base64, hash_md5, tamanho = utils.ler_arquivo(caminho_arq)
+                    tamanho = os.path.getsize(caminho_arq)
+                    with open(caminho_arq, 'rb') as arquivo:
+                        conteudo = arquivo.read()
+                        conteudo_base64 = base64.b64encode(conteudo).decode("utf-8")
+                        hash_md5 = hashlib.md5(conteudo).hexdigest().upper()
                     protocolo = str(uuid.uuid4())
                     file_name = protocolo + "_1_0.pdf"
 
@@ -217,4 +220,3 @@ def executar_automacao(arquivos_comprovante):
     utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
     return modelos_enviados
-    
