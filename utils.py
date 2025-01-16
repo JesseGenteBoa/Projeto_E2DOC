@@ -185,45 +185,44 @@ O CPF abaixo não foi encontrado em nosso banco de dados:
 {cpf_nao_encontrado}
 {comp_nao_env}
 {tipo_pag_incorreto}
-{feriado}
-'''
+
+{feriado}'''
     elif tipo_pag_incorreto and cpfs_errados:
         texto = f'''Envio finalizado!
 {cpf_nao_encontrado}
 {tipo_pag_incorreto}
-{feriado}
-'''
+
+{feriado}'''
     elif tipo_pag_incorreto and comp_nao_env:
         texto = f'''Envio finalizado!
 {tipo_pag_incorreto}
 {comp_nao_env}
-{feriado}
-'''
+
+{feriado}'''
     elif cpfs_errados and comp_nao_env:
         texto = f'''Envio finalizado!
 {cpf_nao_encontrado}
 {comp_nao_env}
-{feriado}
-'''
+
+{feriado}'''
     elif tipo_pag_incorreto:
         texto = f'''Envio finalizado!
 {tipo_pag_incorreto}
-{feriado}
-'''
+
+{feriado}'''
     elif cpfs_errados:
         texto = f'''Envio finalizado!
 {cpf_nao_encontrado}
-{feriado}
-'''
+
+{feriado}'''
     elif compv_nao_env:
         texto = f'''Envio finalizado!
 {comp_nao_env}
-{feriado}
-'''
+
+{feriado}'''
     else:
         texto = f'''Envio finalizado com sucesso!!!
-{feriado}
-'''
+{feriado}'''
 
 
     corpo = f'''Olá, colaborador!
@@ -244,6 +243,7 @@ NOME  -  MODELO DE DOCUMENTO  -  COMPETENCIA
 
 {texto}
 
+
 Grato pela colaboração.
 
 Atensiosamente,
@@ -254,7 +254,7 @@ Doc Hudson,
     carta.set_content(corpo)
     carta['Subject'] = "Enviados para o E2DOC"
     carta['From'] = "eqsengenharia@eqsengenharia.com.br"
-    carta['To'] = "jesse.silva@eqsengenharia.com.br"
+    carta['To'] = ["Financeiro@eqsengenharia.com.br", "jesse.silva@eqsengenharia.com.br"]
 
     try:
         with smtplib.SMTP_SSL('grid331.mailgrid.com.br', 465) as servidor:
@@ -289,4 +289,4 @@ def retornar_data():
     data_formatada = str(agora.strftime("%Y-%m-%d"))
     data = str(agora.strftime("%d/%m"))
     return data_formatada, data
-
+ 
