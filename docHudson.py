@@ -3,10 +3,11 @@ import os
 import uuid
 import utils
 import PyPDF2
+import base64
+import hashlib
 import conexaoDB
 import integradorE2DOC
 from tkinter import messagebox
-
 
 
 def executar_automacao(arquivos_comprovante):
@@ -220,3 +221,5 @@ def executar_automacao(arquivos_comprovante):
     utils.enviar_email(relatorio, tipo_pag_incorreto, cpfs_errados, compv_nao_env)     
     
     return modelos_enviados
+
+  
