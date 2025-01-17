@@ -114,10 +114,10 @@ class E2DocClient:
         """
         Efetiva o envio do arquivo para a plataforma E2DOC,
         além de preencher alguns outros campos do formulário da pasta modelo FINANCEIRO - DP.
-        O envio do documento para o E2DOC através da API é feito em três etapas:
+        O envio do documento para o E2DOC através da API é feito em duas etapas:
         Primeiro enviamos partes do arquivo (caso seja necessário) através da função "/Sincronismo/EnviarParte";
         segundo, enviamos o arquivo em sua totalidade com os demais metadados necessários preenchidos
-        através da função "/Sincronismo/EnviarArquivo"; e por ultimo efetivamos o envio através desta função.
+        através da função "/Sincronismo/EnviarArquivo".
 
         Retorna:
             "Documento enviado com sucesso!" se o envio for bem-sucedido.
