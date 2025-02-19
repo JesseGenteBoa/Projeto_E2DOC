@@ -63,8 +63,8 @@ def executar_automacao(arquivos_comprovante):
                 try:
                     regiao, centro_de_custo, nome = conexaoDB.consultar_db(cpf)
                 except:
-                    messagebox.showerror("Erro!", "Não foi possivel se conectar ao bando de dados da empresa.")
-                    raise Exception("Não foi possivel se conectar ao bando de dados da empresa.")
+                    messagebox.showerror("Erro!", "Não foi possivel se conectar ao banco de dados da empresa.")
+                    raise Exception("Não foi possivel se conectar ao banco de dados da empresa.")
                 
                 if regiao == False:
                     cpfs_errados.append(cpf)
