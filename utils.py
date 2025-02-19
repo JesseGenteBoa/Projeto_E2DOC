@@ -42,39 +42,29 @@ def retornar_banco(caminho):
 
 def retornar_dt_festiva():
     _, data = retornar_data()
-    match data:
-        case "01/04":
-            feriado = '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!
-"Não sei, só sei que foi assim" - Chicó'''
-        case "22/04":
-            feriado = "Dia da Terra! Vamos cuidar bem do nosso planeta."
-        case "01/05":
-            feriado = "Feliz dia do trabalhador para você que trabalha e sente muita dor."
-        case "11/05":
-            feriado = "Feliz dia das mães!"
-        case "05/06":
-            feriado = "Dia Mundial do Meio Ambiente! A natureza agradece!"
-        case "12/06":
-            feriado = "Para todos os sortudos que encontraram o amor, Feliz dia dos namorados!"
-        case _ if data >= "16/06" and data <= "24/06":
-            feriado = "Feliz São João! É festa junina com muito forró e canjica!"
-        case "10/08":
-            feriado = "Feliz dia dos pais!"
-        case "07/09":
-            feriado = "Viva a nossa independência!"
-        case "23/09":
-            feriado = "Bem-vinda, primavera! Flores para alegrar o dia."
-        case "12/10":
-            feriado = "Feliz dia das nossas crianças!"
-        case "31/10":
-            feriado = "Feliz dia do Saci, pessoal!"
-        case "02/11":
-            feriado = "Saudemos os nossos mortos. Eles estão diante do maior mistério da nossa existência, o estar ou o não estar."
-        case _ if data >= "20/12" and data <= "31/12":
-            feriado = "Boas festas!"
-        case _:
-            feriado = ""
-    return feriado
+
+    feriados = {
+            "01/04": '''Viva à fantasia, a capacidade humana de imaginar e contar a realidade como ela deveria ser!
+"Não sei, só sei que foi assim" - Chicó''',
+            "22/04": "Dia da Terra! Vamos cuidar bem do nosso planeta.",
+            "01/05": "Feliz dia do trabalhador para você que trabalha e sente muita dor.",
+            "11/05": "Feliz dia das mães!",
+            "05/06": "Dia Mundial do Meio Ambiente! A natureza agradece!",
+            "12/06": "Para todos os sortudos que encontraram o amor, Feliz dia dos namorados!",
+            "10/08": "Feliz dia dos pais!",
+            "07/09": "Viva a nossa independência!",
+            "23/09": "Bem-vinda, primavera! Flores para alegrar o dia.",
+            "12/10": "Feliz dia das nossas crianças!",
+            "31/10": "Feliz dia do Saci, pessoal!",
+            "02/11": "Saudemos os nossos mortos. Eles estão diante do maior mistério da nossa existência, o estar ou o não estar."
+        }
+
+    if data >= "16/06" and data <= "24/06":
+        return "Feliz São João! É festa junina com muito forró e canjica!"
+    elif data >= "20/12" and data <= "31/12":
+        return "Boas festas!"
+    else:
+        return feriados.get(data, "")
 
 
 
@@ -277,4 +267,4 @@ def retornar_data():
     return data_formatada, data
 
 
-   
+       
