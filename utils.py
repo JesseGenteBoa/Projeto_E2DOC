@@ -56,7 +56,7 @@ def retornar_dt_festiva():
             feriado = "Dia Mundial do Meio Ambiente! A natureza agradece!"
         case "12/06":
             feriado = "Para todos os sortudos que encontraram o amor, Feliz dia dos namorados!"
-        case _ if "16/06" <= data <= "24/06":
+        case _ if data >= "16/06" and data <= "24/06":
             feriado = "Feliz São João! É festa junina com muito forró e canjica!"
         case "10/08":
             feriado = "Feliz dia dos pais!"
@@ -70,7 +70,7 @@ def retornar_dt_festiva():
             feriado = "Feliz dia do Saci, pessoal!"
         case "02/11":
             feriado = "Saudemos os nossos mortos. Eles estão diante do maior mistério da nossa existência, o estar ou o não estar."
-        case _ if "20/12" <= data <= "31/12":
+        case _ if data >= "20/12" and data <= "31/12":
             feriado = "Boas festas!"
         case _:
             feriado = ""
